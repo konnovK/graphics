@@ -50,6 +50,11 @@
                 vy: speedY
             };
 
+            this.startPos = {
+                x: startPosX,
+                y: startPosY
+            }
+
             this.pos = {
                 x: startPosX,
                 y: startPosY
@@ -69,12 +74,12 @@
 
 
     let listOfBallsImg = [];
-    for (let i = 0; i <= getRndInRange(10, 15); i++) {
+    for (let i = 0; i <= 0; i++) {
         listOfBallsImg.push(new BallImg(
             getRndInRange(150, boxSize.w - 150),
             getRndInRange(100, boxSize.h - 100),
-            getRndSign() * getRndInRange(60, 100),
-            getRndSign() * getRndInRange(60, 100),
+            getRndSign() * getRndInRange(100, 250),
+            getRndSign() * getRndInRange(100, 250),
             )
         );
     }
@@ -83,19 +88,27 @@
 
     // ФУНКЦИИ, КОТОРЫЕ МОЖНО МЕНЯТЬ
 
+    let findPos = (timeFromAnimationStartInSeconds, ball, boxSize) => {
+        let nowPosX = ball.startPos.x + ball.SPEED.vx * timeFromAnimationStartInSeconds;
+        let nowPosY = ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds;
+
+        let countOfInverseX = Math.floor(Math.abs(nowPosX) / boxSize.w);
+        let countOfInverseY = Math.floor(Math.abs(nowPosY) / boxSize.h);
+
+        if (countOfInverseX % 2 === 1) {
+            nowPosX = boxSize.w - (Math.abs(nowPosX) % boxSize.w);
+        }
+        if (countOfInverseY % 2 === 1) {
+            nowPosY = boxSize.h - (Math.abs(nowPosY) % boxSize.h);
+        }
+
+        return {x: Math.abs(nowPosX % boxSize.w), y: Math.abs(nowPosY % boxSize.h)};
+    }
 
 
     // Рисуем контейнер, где будут кататься шарики
     let drawBox = () => {
         ctx.strokeRect((cvs.width / 2) - (boxSize.w / 2), (cvs.height / 2) - (boxSize.h / 2), boxSize.w, boxSize.h);
-    }
-
-
-    // Изменяем направление шара при контакте со стенами
-    let changeDirection = (pos, radius, speed) => {
-        let realPosOfBall = {x: boxPos.x + pos.x, y: boxPos.y + pos.y};
-        speed.vy = (realPosOfBall.y + radius >= boxPos.y + boxSize.h) || (realPosOfBall.y - radius <= boxPos.y) ? -speed.vy : speed.vy;
-        speed.vx = (realPosOfBall.x + radius >= boxPos.x + boxSize.w) || (realPosOfBall.x - radius <= boxPos.x) ? -speed.vx : speed.vx;
     }
 
 
@@ -105,7 +118,7 @@
             ballsImg,
             SPRITE_X0 + spriteIndex * SPRITE_W, SPRITE_Y0, // положение выреза на исходном изображении
             SPRITE_W, SPRITE_H, // высота и ширина выреза
-            boxPos.x + pos.x - (SPRITE_W / 2), boxPos.y + pos.y - (SPRITE_H / 2), // где рисовать на canvas
+            boxPos.x + pos.x, boxPos.y + pos.y, // где рисовать на canvas
             SPRITE_W, SPRITE_H // размер рисуемого изображения
         );
     }
@@ -120,18 +133,16 @@
 
         listOfBallsImg.forEach((ballImg) => {
             drawBallImg(ballImg.pos);
-            changeDirection(ballImg.pos, ballImg.RADIUS, ballImg.SPEED);
         });
     }
 
 
     // !!!
     // функция, которая меняет состояние мира
-    function step(timeFromAnimationStart, timeFromLastFrame) {
+    function step(timeFromAnimationStart) {
 
-        listOfBallsImg.forEach((ballImg) => {
-            ballImg.pos.x += ballImg.SPEED.vx * (timeFromLastFrame / 1000);
-            ballImg.pos.y += ballImg.SPEED.vy * (timeFromLastFrame / 1000);
+        listOfBallsImg.forEach((ball) => {
+            ball.pos = findPos(timeFromAnimationStart / 1000, ball, {w: boxSize.w - SPRITE_W, h: boxSize.h - SPRITE_H});
         });
 
         spriteIndex = Math.floor(timeFromAnimationStart / (1000 / ballFrameRate)) % SPRITE_COUNT;
