@@ -89,20 +89,43 @@
     // ФУНКЦИИ, КОТОРЫЕ МОЖНО МЕНЯТЬ
 
     let findPos = (timeFromAnimationStartInSeconds, ball, boxSize) => {
-        let nowPosX = ball.startPos.x + ball.SPEED.vx * timeFromAnimationStartInSeconds;
-        let nowPosY = ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds;
+        return (Math.floor(Math.abs(ball.startPos.x + ball.SPEED.vx * timeFromAnimationStartInSeconds) / boxSize.w) === 1) ?
+            (Math.floor(Math.abs(ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds) / boxSize.h) === 1) ?
+                {
+                    x: Math.abs(boxSize.w - (Math.abs(ball.startPos.x + ball.SPEED.vx * timeFromAnimationStartInSeconds) % boxSize.w) % boxSize.w),
+                    y: Math.abs(boxSize.h - (Math.abs(ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds) % boxSize.h) % boxSize.h)
+                }
+                :
+                {
+                    x: Math.abs(boxSize.w - (Math.abs(ball.startPos.x + ball.SPEED.vx * timeFromAnimationStartInSeconds) % boxSize.w) % boxSize.w),
+                    y: Math.abs((ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds) % boxSize.h)
+                }
+                :
+                (Math.floor(Math.abs(ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds) / boxSize.h) === 1) ?
+                    {
+                        x: Math.abs((ball.startPos.x + ball.SPEED.vx * timeFromAnimationStartInSeconds) % boxSize.w),
+                        y: Math.abs(boxSize.h - (Math.abs(ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds) % boxSize.h) % boxSize.h)
+                    }
+                    :
+                    {
+                        x: Math.abs((ball.startPos.x + ball.SPEED.vx * timeFromAnimationStartInSeconds) % boxSize.w),
+                        y: Math.abs((ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds) % boxSize.h)
+                    };
 
-        let countOfInverseX = Math.floor(Math.abs(nowPosX) / boxSize.w);
-        let countOfInverseY = Math.floor(Math.abs(nowPosY) / boxSize.h);
-
-        if (countOfInverseX % 2 === 1) {
-            nowPosX = boxSize.w - (Math.abs(nowPosX) % boxSize.w);
-        }
-        if (countOfInverseY % 2 === 1) {
-            nowPosY = boxSize.h - (Math.abs(nowPosY) % boxSize.h);
-        }
-
-        return {x: Math.abs(nowPosX % boxSize.w), y: Math.abs(nowPosY % boxSize.h)};
+        // let nowPosX = ball.startPos.x + ball.SPEED.vx * timeFromAnimationStartInSeconds;
+        // let nowPosY = ball.startPos.y + ball.SPEED.vy * timeFromAnimationStartInSeconds;
+        //
+        // let countOfInverseX = Math.floor(Math.abs(nowPosX) / boxSize.w);
+        // let countOfInverseY = Math.floor(Math.abs(nowPosY) / boxSize.h);
+        //
+        // if (countOfInverseX % 2 === 1) {
+        //     nowPosX = boxSize.w - (Math.abs(nowPosX) % boxSize.w);
+        // }
+        // if (countOfInverseY % 2 === 1) {
+        //     nowPosY = boxSize.h - (Math.abs(nowPosY) % boxSize.h);
+        // }
+        //
+        // return {x: Math.abs(nowPosX % boxSize.w), y: Math.abs(nowPosY % boxSize.h)};
     }
 
 
