@@ -29,21 +29,10 @@
 
 
 
-    const ballFrameRate = 10;
+    const COLORS = ['IndianRed', 'Pink', 'Orange', 'Khaki', 'Plum', 'BurlyWood', 'Teal', 'DarkOliveGreen', 'LightGreen', 'RoyalBlue'];
 
-    const SPRITE_X0 = 0;
-    const SPRITE_Y0 = 50;
-    const SPRITE_W = 50;
-    const SPRITE_H = 50;
-    const SPRITE_COUNT = 10;
-
-    let spriteIndex = 0;
-
-    let ballsImg = new Image();
-    ballsImg.src = 'balls1.png';
-
-    class BallImg {
-        constructor(startPosX, startPosY, speedX, speedY) {
+    class Ball {
+        constructor(startPosX, startPosY, speedX, speedY, radius = 30) {
             this.SPEED = {
                 vx: speedX,
                 vy: speedY
@@ -54,10 +43,12 @@
                 y: startPosY
             };
 
-            this.RADIUS = Math.max(SPRITE_W / 2, SPRITE_H / 2);
+            this.RADIUS = radius;
 
+            this.COLOR = COLORS[getRndInRange(0, COLORS.length) % COLORS.length]; // random color
         }
     }
+
 
     let getRndInRange = (min, max) => Math.floor(Math.random() * (max - min)) + min;
     let getRndSign = () => Math.floor(Math.random() * 2) === 0 ? -1 : 1;
@@ -67,13 +58,15 @@
     let boxPos = {x: (cvs.width / 2) - (boxSize.w / 2), y: (cvs.height / 2) - (boxSize.h / 2)};
 
 
-    let listOfBallsImg = [];
+
+    let listOfBalls = [];
     for (let i = 0; i <= getRndInRange(10, 15); i++) {
-        listOfBallsImg.push(new BallImg(
+        listOfBalls.push(new Ball(
             getRndInRange(150, boxSize.w - 150),
             getRndInRange(100, boxSize.h - 100),
             getRndSign() * getRndInRange(60, 100),
             getRndSign() * getRndInRange(60, 100),
+            getRndInRange(10, 50),
             )
         );
     }
@@ -89,7 +82,6 @@
         ctx.strokeRect((cvs.width / 2) - (boxSize.w / 2), (cvs.height / 2) - (boxSize.h / 2), boxSize.w, boxSize.h);
     }
 
-
     // Изменяем направление шара при контакте со стенами
     let changeDirection = (pos, radius, speed) => {
         let realPosOfBall = {x: boxPos.x + pos.x, y: boxPos.y + pos.y};
@@ -97,17 +89,14 @@
         speed.vx = (realPosOfBall.x + radius >= boxPos.x + boxSize.w) || (realPosOfBall.x - radius <= boxPos.x) ? -speed.vx : speed.vx;
     }
 
-
     // Рисуем сам шар
-    let drawBallImg = (pos) => {
-        ctx.drawImage(
-            ballsImg,
-            SPRITE_X0 + spriteIndex * SPRITE_W, SPRITE_Y0, // положение выреза на исходном изображении
-            SPRITE_W, SPRITE_H, // высота и ширина выреза
-            boxPos.x + pos.x - (SPRITE_W / 2), boxPos.y + pos.y - (SPRITE_H / 2), // где рисовать на canvas
-            SPRITE_W, SPRITE_H // размер рисуемого изображения
-        );
+    let drawBall = (pos, radius, color) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(boxPos.x + pos.x, boxPos.y + pos.y, radius, 0, Math.PI * 2);
+        ctx.fill();
     }
+
 
 
     // !!!
@@ -117,23 +106,21 @@
 
         drawBox();
 
-        listOfBallsImg.forEach((ballImg) => {
-            drawBallImg(ballImg.pos);
-            changeDirection(ballImg.pos, ballImg.RADIUS, ballImg.SPEED);
+        listOfBalls.forEach((ball) => {
+            drawBall(ball.pos, ball.RADIUS, ball.COLOR);
+            changeDirection(ball.pos, ball.RADIUS, ball.SPEED);
         });
     }
+
 
 
     // !!!
     // функция, которая меняет состояние мира
     function step(timeFromAnimationStart, timeFromLastFrame) {
-
-        listOfBallsImg.forEach((ballImg) => {
-            ballImg.pos.x += ballImg.SPEED.vx * (timeFromLastFrame / 1000);
-            ballImg.pos.y += ballImg.SPEED.vy * (timeFromLastFrame / 1000);
+        listOfBalls.forEach((ball) => {
+            ball.pos.x += ball.SPEED.vx * (timeFromLastFrame / 1000);
+            ball.pos.y += ball.SPEED.vy * (timeFromLastFrame / 1000);
         });
-
-        spriteIndex = Math.floor(timeFromAnimationStart / (1000 / ballFrameRate)) % SPRITE_COUNT;
     }
 
 
@@ -147,11 +134,9 @@
         ctx.fillRect(0,0,cvs.width,cvs.height);
     }
 
-
     let currentTime = () => new Date().getTime();
     let animationStart = currentTime();
     let lastFrameTime = currentTime();
-
 
     // функция, делающая что-то раз в интервал (60 fps)
     function tick() {
