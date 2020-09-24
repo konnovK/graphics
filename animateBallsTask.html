@@ -162,17 +162,13 @@
 
     let currentTime = () => new Date().getTime();
     let animationStart = currentTime();
-    let lastFrameTime = currentTime();
 
 
     // функция, делающая что-то раз в интервал (60 fps)
     function tick() {
-        let now = currentTime();
         let timeFromAnimationStart = currentTime() - animationStart;
-        let timeFromLastFrame = now - lastFrameTime;
-        lastFrameTime = now;
         draw();
-        step(timeFromAnimationStart,timeFromLastFrame);
+        step(timeFromAnimationStart);
         requestAnimationFrame(tick);
     }
     tick();
