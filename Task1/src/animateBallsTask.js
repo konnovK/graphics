@@ -18,7 +18,7 @@ const SPRITE_COUNT = 10;
 let spriteIndex = 0;
 
 let ballsImg = new Image();
-ballsImg.src = 'src/img/balls1.png';
+ballsImg.src = 'img/balls1.png';
 
 class BallImg {
     constructor(startPosX, startPosY, speedX, speedY) {
