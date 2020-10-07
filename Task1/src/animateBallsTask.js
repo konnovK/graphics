@@ -15,6 +15,7 @@ const SPRITE_COUNT = 10;
 const BALLS_IMG = new Image();
 BALLS_IMG.src = 'img/balls1.png';
 
+let idCounter = 0;
 
 let spriteIndex = 0;
 
@@ -36,6 +37,9 @@ class Ball {
         };
 
         this.RADIUS = Math.max(SPRITE_W / 2, SPRITE_H / 2);
+
+        this.id = idCounter;
+        idCounter++;
     }
 
     draw() {
@@ -64,6 +68,20 @@ class Ball {
 
         this.pos = {x: Math.abs(nowPosX % boxSpriteSize.w), y: Math.abs(nowPosY % boxSpriteSize.h)};
     }
+
+    isCursorInside = (CursorPosition)  => {
+        let radius = 1.5 * this.RADIUS;
+        return (CursorPosition.x >= this.pos.x - radius)
+        && (CursorPosition.x <= this.pos.x + radius)
+        && (CursorPosition.y >= this.pos.y - radius)
+        && (CursorPosition.y <= this.pos.y + radius);
+    }
+
+    boom() {
+        // TODO: сделать взрыв
+        console.log('boom');
+        return this.id;
+    }
 }
 
 let getRndInRange = (min, max) => Math.floor(Math.random() * (max - min)) + min;
@@ -91,6 +109,32 @@ for (let i = 0; i <= getRndInRange(10, 20); i++) {
 
 // ФУНКЦИИ, КОТОРЫЕ МОЖНО МЕНЯТЬ
 
+function getCursorPosition(e) {
+    const rect = cvs.getBoundingClientRect();
+    const x = e.clientX - rect.left - boxPos.x;
+    const y = e.clientY - rect.top - boxPos.y;
+    return {x, y};
+}
+
+cvs.addEventListener('mousedown', (e) => {
+    let idOfBoom = [];
+    let cursorPosition = getCursorPosition(e);
+
+    listOfBalls.forEach((ball) => {
+        if (ball.isCursorInside(cursorPosition))
+            idOfBoom.push(ball.boom());
+    });
+
+    idOfBoom.forEach(_id => {
+        // TODO: почему не работает listOfBalls.filter()
+        for (let i = 0; i < listOfBalls.length; i++) {
+            if (typeof listOfBalls[i] === 'undefined')
+                continue;
+            if (_id === listOfBalls[i].id)
+                listOfBalls.splice(i, 1);
+        }
+    });
+})
 
 // Рисуем контейнер, где будут кататься шарики
 let drawBox = () => {
