@@ -7,20 +7,57 @@ ctx.fillRect(0,0,cvs.width, cvs.height);
 // ДАННЫЕ О МИРЕ
 
 const BALL_FRAME_RATE = 10;
-const SPRITE_X0 = 0;
-const SPRITE_Y0 = 50;
-const SPRITE_W = 50;
-const SPRITE_H = 50;
-const SPRITE_COUNT = 10;
-const BALLS_IMG = new Image();
-BALLS_IMG.src = 'img/balls1.png';
+const BALL_SPRITE_X0 = 0;
+const BALL_SPRITE_Y0 = 50;
+const BALL_SPRITE_W = 50;
+const BALL_SPRITE_H = 50;
+const BALL_SPRITE_COUNT = 10;
+const BALL_IMG = new Image();
+BALL_IMG.src = 'img/balls1.png';
+let ballSpriteIndex = 0;
+
+const BANG_FRAME_RATE = 10;
+const BANG_SPRITE_X0 = 0;
+const BANG_SPRITE_Y0 = 50;
+const BANG_SPRITE_W = 50;
+const BANG_SPRITE_H = 50;
+const BANG_SPRITE_COUNT = 10;
+const BANG_IMG = new Image();
+BANG_IMG.src = 'img/bang.png';
+
 
 let idCounter = 0;
 
-let spriteIndex = 0;
+class Bang {
+    constructor(BangStartTime, pos) {
+        this.BangStartTime = BangStartTime;
+        this.pos = pos;
+
+        this.drawable = true;
+    }
+
+    findBangSpriteIndex() {
+        let timeFromBangStart = currentTime() - this.BangStartTime;
+        let index = Math.floor(timeFromBangStart / (1000 / BANG_FRAME_RATE));
+        this.drawable = index <= BANG_SPRITE_COUNT;
+        return index;
+    }
+
+    draw() {
+        if (this.drawable)
+            ctx.drawImage(
+                BANG_IMG,
+                BANG_SPRITE_X0 + this.findBangSpriteIndex() * BANG_SPRITE_W, BANG_SPRITE_Y0, // положение выреза на исходном изображении
+                BANG_SPRITE_W, BANG_SPRITE_H, // высота и ширина выреза
+                boxPos.x + this.pos.x, boxPos.y + this.pos.y, // где рисовать на canvas
+                BANG_SPRITE_W, BANG_SPRITE_H // размер рисуемого изображения
+            );
+    }
+}
 
 class Ball {
     constructor(startPosX, startPosY, speedX, speedY) {
+
         this.SPEED = {
             vx: speedX,
             vy: speedY
@@ -36,7 +73,7 @@ class Ball {
             y: startPosY
         };
 
-        this.RADIUS = Math.max(SPRITE_W / 2, SPRITE_H / 2);
+        this.RADIUS = Math.max(BALL_SPRITE_W / 2, BALL_SPRITE_H / 2);
 
         this.id = idCounter;
         idCounter++;
@@ -44,11 +81,11 @@ class Ball {
 
     draw() {
         ctx.drawImage(
-            BALLS_IMG,
-            SPRITE_X0 + spriteIndex * SPRITE_W, SPRITE_Y0, // положение выреза на исходном изображении
-            SPRITE_W, SPRITE_H, // высота и ширина выреза
+            BALL_IMG,
+            BALL_SPRITE_X0 + ballSpriteIndex * BALL_SPRITE_W, BALL_SPRITE_Y0, // положение выреза на исходном изображении
+            BALL_SPRITE_W, BALL_SPRITE_H, // высота и ширина выреза
             boxPos.x + this.pos.x, boxPos.y + this.pos.y, // где рисовать на canvas
-            SPRITE_W, SPRITE_H // размер рисуемого изображения
+            BALL_SPRITE_W, BALL_SPRITE_H // размер рисуемого изображения
         );
     }
 
@@ -80,6 +117,7 @@ class Ball {
     boom() {
         // TODO: сделать взрыв
         console.log('boom');
+        listOfBangs.push(new Bang(currentTime(), this.pos));
         return this.id;
     }
 }
@@ -105,6 +143,8 @@ for (let i = 0; i <= getRndInRange(10, 20); i++) {
     );
 }
 
+
+let listOfBangs = [];
 
 
 // ФУНКЦИИ, КОТОРЫЕ МОЖНО МЕНЯТЬ
@@ -146,6 +186,11 @@ function draw() {
     listOfBalls.forEach((ball) => {
         ball.draw();
     });
+
+    listOfBangs = listOfBangs.filter(bang => bang.drawable);
+    listOfBangs.forEach((bang) => {
+        bang.draw();
+    });
 }
 
 
@@ -153,10 +198,10 @@ function draw() {
 // функция, которая меняет состояние мира
 function step(timeFromAnimationStart) {
     listOfBalls.forEach((ball) => {
-        ball.changePosition(timeFromAnimationStart / 1000, {w: boxSize.w - SPRITE_W, h: boxSize.h - SPRITE_H});
+        ball.changePosition(timeFromAnimationStart / 1000, {w: boxSize.w - BALL_SPRITE_W, h: boxSize.h - BALL_SPRITE_H});
     });
 
-    spriteIndex = Math.floor(timeFromAnimationStart / (1000 / BALL_FRAME_RATE)) % SPRITE_COUNT;
+    ballSpriteIndex = Math.floor(timeFromAnimationStart / (1000 / BALL_FRAME_RATE)) % BALL_SPRITE_COUNT;
 }
 
 
