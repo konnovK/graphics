@@ -126,13 +126,7 @@ cvs.addEventListener('mousedown', (e) => {
     });
 
     idOfBoom.forEach(_id => {
-        // TODO: почему не работает listOfBalls.filter()
-        for (let i = 0; i < listOfBalls.length; i++) {
-            if (typeof listOfBalls[i] === 'undefined')
-                continue;
-            if (_id === listOfBalls[i].id)
-                listOfBalls.splice(i, 1);
-        }
+        listOfBalls = listOfBalls.filter(ball => ball.id !== _id);
     });
 })
 
