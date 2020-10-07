@@ -18,10 +18,10 @@ let ballSpriteIndex = 0;
 
 const BANG_FRAME_RATE = 10;
 const BANG_SPRITE_X0 = 0;
-const BANG_SPRITE_Y0 = 50;
-const BANG_SPRITE_W = 50;
-const BANG_SPRITE_H = 50;
-const BANG_SPRITE_COUNT = 10;
+const BANG_SPRITE_Y0 = 0;
+const BANG_SPRITE_W = 140;
+const BANG_SPRITE_H = 140;
+const BANG_SPRITE_COUNT = 7;
 const BANG_IMG = new Image();
 BANG_IMG.src = 'img/bang.png';
 
@@ -115,9 +115,13 @@ class Ball {
     }
 
     boom() {
-        // TODO: сделать взрыв
         console.log('boom');
-        listOfBangs.push(new Bang(currentTime(), this.pos));
+        listOfBangs.push(
+            new Bang(currentTime(), {
+                x: this.pos.x + this.RADIUS - (BANG_SPRITE_W / 2),
+                y: this.pos.y + this.RADIUS - (BANG_SPRITE_H / 2)
+            })
+        );
         return this.id;
     }
 }
