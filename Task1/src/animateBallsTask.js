@@ -115,7 +115,6 @@ class Ball {
     }
 
     boom() {
-        console.log('boom');
         listOfBangs.push(
             new Bang(currentTime(), {
                 x: this.pos.x + this.RADIUS - (BANG_SPRITE_W / 2),
