@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>animation</title>
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <style>
+        canvas {
+            display:block;
+            margin: 50px auto;
+            border: 1px solid gray;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas width="1280" height="720"></canvas>
+
+<a href="../index.html">back to main page</a>
+
+<button onclick="window.location.reload()">reload</button>
+
+<script>
+    let cvs = document.querySelectorAll('canvas').item(0);
+    let ctx = cvs.getContext('2d');
+
+    ctx.fillRect(0,0,cvs.width, cvs.height);
+
+    // ДАННЫЕ О МИРЕ
+
+    const PETAL_LEN = 220;
+    const PETAL_WIDTH = 33;
+    const LINE_LEN = 120;
+
+    let rotateAngle = 0;
+    let rotateInnerAngle = 0;
+
+    // ФУНКЦИИ, КОТОРЫЕ МОЖНО МЕНЯТЬ
+
+    let drawPetal = (x, y, width, height, color='green', lineWidth=3) => {
+        ctx.save();
+
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = 'light' + color;
+        ctx.lineWidth = lineWidth;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - width, y - height);
+        ctx.lineTo(x + width, y - height);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+
+        ctx.restore();
+    }
+
+    let drawLine = (x,y,len) => {
+        ctx.save();
+
+        ctx.beginPath();
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.moveTo(x,y);
+        ctx.lineTo(x, y + len);
+        ctx.stroke();
+        ctx.beginPath();
+
+        ctx.restore();
+    }
+
+    let drawPoint = (x,y,size, color='black') => {
+        ctx.save();
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x,y,size,0,2*Math.PI,false);
+        ctx.fill();
+        ctx.beginPath();
+
+        ctx.restore();
+    }
+
+    let drawStrokePoint = (x,y,size, color='black', lineWidth=2) => {
+        ctx.save();
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        ctx.arc(x,y,size,0,2*Math.PI,false);
+        ctx.stroke();
+        ctx.beginPath();
+
+        ctx.restore();
+    }
+
+    // !!!
+    // функция, которая рисут на канвасе
+    function draw() {
+        clearCanvas();
+
+        ctx.save();
+
+        ctx.translate(cvs.width / 2, cvs.height / 2 - 100);
+
+        // рисуем внутренние мельницы
+        for (let i = 0; i < 12; i++) {
+            let angle = i * (Math.PI / 6) + rotateAngle;
+
+            ctx.save();
+            ctx.rotate(angle);
+            ctx.translate(0, -(PETAL_LEN - 20));
+            ctx.rotate(-angle);
+            ctx.translate(0, LINE_LEN);
+
+            for (let j = 0; j < 12; j++) {
+                let innerAngle = j * (Math.PI / 6) + rotateInnerAngle;
+                ctx.save();
+                ctx.rotate(innerAngle);
+
+                drawPetal(0,0,PETAL_WIDTH / 5,PETAL_LEN / 5, 'blue', 1);
+                drawPoint(0, 0, 3, 'lightblue');
+                drawStrokePoint(0, 0, 3, 'blue');
+
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        // рисуем веревочки
+        for (let i = 0; i < 12; i++) {
+            let angle = i * (Math.PI / 6) + rotateAngle;
+
+            ctx.save();
+            ctx.rotate(angle);
+            ctx.translate(0, -(PETAL_LEN - 20));
+            ctx.rotate(-angle);
+
+            drawLine(0,0,LINE_LEN);
+
+            ctx.restore();
+        }
+
+        // рисуем внешнюю мельницу
+        for (let i = 0; i < 12; i++) {
+            let angle = i * (Math.PI / 6) + rotateAngle;
+
+            ctx.save();
+            ctx.rotate(angle);
+
+            drawPetal(0, 0, PETAL_WIDTH, PETAL_LEN);
+            drawPoint(0, 0, 30, 'lightgreen');
+            drawStrokePoint(0, 0, 30, 'green', 2.5);
+            drawPoint(0, 0, 2);
+
+            ctx.restore();
+        }
+
+        // точки на лопастях внешней мельницы
+        for (let i = 0; i < 12; i++) {
+            let angle = i * (Math.PI / 6) + rotateAngle;
+
+            ctx.save();
+            ctx.rotate(angle);
+            ctx.translate(0, -(PETAL_LEN - 20));
+            ctx.rotate(-angle);
+
+            drawPoint(0, 0, 2);
+
+            ctx.restore();
+        }
+
+        ctx.restore();
+    }
+
+
+    // !!!
+    // функция, которая меняет состояние мира
+    function step(timeFromAnimationStart, timeFromLastFrame) {
+        rotateAngle += ((60 * timeFromLastFrame / 1000) * 2 * Math.PI) / 360;
+        rotateInnerAngle = 2.2 * rotateAngle;
+
+        draw();
+    }
+
+
+
+    // УНИВЕРСАЛЬНЫЕ ПОНЯТИЯ
+
+
+    const clearCanvas = () => {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0,0,cvs.width,cvs.height);
+    }
+
+
+    let currentTime = () => new Date().getTime();
+    let animationStart = currentTime();
+    let lastFrameTime = currentTime();
+
+    // функция, делающая что-то раз в интервал (60 fps)
+    function tick() {
+        let now = currentTime();
+        let timeFromAnimationStart = currentTime() - animationStart;
+        let timeFromLastFrame = now - lastFrameTime;
+        lastFrameTime = now;
+        draw();
+        step(timeFromAnimationStart, timeFromLastFrame);
+        requestAnimationFrame(tick);
+    }
+    tick();
+</script>
+
+</body>
+</html>
