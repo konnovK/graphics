@@ -116,7 +116,7 @@
             ctx.translate(0, LINE_LEN);
 
             for (let j = 0; j < 12; j++) {
-                let innerAngle = j * (Math.PI / 6) + rotateInnerAngle;
+                let innerAngle = -(j * (Math.PI / 6) + rotateInnerAngle);
                 ctx.save();
                 ctx.rotate(innerAngle);
 
