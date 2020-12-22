@@ -3,5 +3,8 @@ body {
   font-family: sans-serif;
   font-size: 20px;
 }
+body div {
+  max-width: 800px;
+}
 
 /*# sourceMappingURL=style.css.map */
