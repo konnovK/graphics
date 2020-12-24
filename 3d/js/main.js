@@ -1,9 +1,9 @@
-let nav = document.querySelector("#navbar");
-document.body.removeChild(document.querySelector("#navbar"));
+// let nav = document.querySelector("#navbar");
+// document.body.removeChild(document.querySelector("#navbar"));
 
 // !!! параметры мира
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 10000);
+const camera = new THREE.PerspectiveCamera(76, window.innerWidth / window.innerHeight, 0.1, 10000);
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -21,7 +21,7 @@ let sphere_flag = false;
 
 // !!! параметры камеры
 // camera.position.set(0, 2, 9);
-camera.position.set(7, 2, 7);
+camera.position.set(9, 1.6, 8);
 camera.rotation.y = Math.PI / 6;
 
 
@@ -51,7 +51,7 @@ const drawCoords = () => {
 
     renderer.render(scene, camera);
 }
-// drawCoords();
+drawCoords();
 
 
 
@@ -138,7 +138,7 @@ const drawMap = () => {
 
     renderer.render(scene, camera);
 }
-drawMap();
+// drawMap();
 
 
 // LIGHT Hi
@@ -278,7 +278,6 @@ const checkPos = (pos) => {
 
 const changeDirection = () => {
 
-    let not_change_direction_flag = false;
     let old_vect = Object.assign({}, vect);
 
     let new_vect_coord = vect.coord;
@@ -314,11 +313,10 @@ const changeDirection = () => {
     }
 
     if (new_vect_coord === old_vect.coord) {
-        not_change_direction_flag = true;
         vect = old_vect;
     } else {
         vect = {sign: new_vect_sign, coord: new_vect_coord};
-        if (!not_change_direction_flag) sphere_flag = true;
+        sphere_flag = true;
         // drawVerySmallSphere();
     }
 }
@@ -339,7 +337,7 @@ const lookAhead = () => {
         }
 
         if (!checkPos(look_ahead_pos)) {
-            if (sphere_flag) drawSmallSphere();
+            if (sphere_flag) drawVerySmallSphere();
             sphere_flag = false;
             break;
         }
@@ -366,7 +364,7 @@ const drawSmallSphere = () => {
 
 
 const drawVerySmallSphere = () => {
-    let geometry = new THREE.SphereGeometry(size + 0.02,20,20);
+    let geometry = new THREE.SphereGeometry(size + 0.03,20,20);
     let material = new THREE.MeshPhongMaterial({color: now_color});
     let sphere = new THREE.Mesh( geometry, material );
     sphere.position.x = now_pos.x;
@@ -410,4 +408,4 @@ animate();
 
 document.body.appendChild( renderer.domElement );
 
-document.body.appendChild(nav);
+// document.body.appendChild(nav);
