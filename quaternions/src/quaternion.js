@@ -70,7 +70,7 @@ export default class Quaternion {
     }
 
     translate(vector) {
-        return new Quaternion(this.a, this.b + vector.x, this.c + vector.y, this.d + vector.z);
+        return Quaternion.add(this, Quaternion.fromVector(0, vector));
     }
 
     rotate(angle, axis) {
