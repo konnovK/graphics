@@ -51,7 +51,7 @@ const drawCoords = () => {
 
     renderer.render(scene, camera);
 }
-drawCoords();
+// drawCoords();
 
 
 
