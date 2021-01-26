@@ -2,17 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Поворот векторов</title>
+    <title>Движение векторов</title>
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-<form>
-    i speed: <input type="number" name="iSpeed" value="0">
-    j speed: <input type="number" name="jSpeed" value="0">
-    k speed: <input type="number" name="kSpeed" value="0">
-</form>
+<div style="text-align: center; margin-top: 20px">
+    <form>
+        i speed: <input type="number" name="iSpeed" value="0">
+        j speed: <input type="number" name="jSpeed" value="0">
+        k speed: <input type="number" name="kSpeed" value="0">
+    </form>
+</div>
 
 <canvas id="surface" width="800" height="600" style="border: 1px solid black"></canvas>
 
+<div>
+    <a href="../index.html">back to main page</a>
+</div>
 <script type="module" src="src/main.js"></script>
 </body>
 </html>
