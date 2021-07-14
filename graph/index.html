@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Играюсь с машинным обучением и постоением графика</title>
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<p>
+    Строим функцию (полином), которая старается максимально приближаться к заданным точкам. Кнопка Z перестраивает график.<br>
+    <span id="loss" style="color: #636363; font-style: italic;"></span>
+</p>
+
+<canvas width="1280" height="720"></canvas>
+
+<div style="margin-bottom: 10px;">
+    <label>
+        Степерь многочлена
+        <input id="depth" name="depth" value="5">
+    </label>
+    <br>
+    <label>
+        Количество эпох
+        <input id="epochs" name="epochs" value="2500">
+    </label>
+    <br>
+    <label>
+        Скорость обучения
+        <input id="speed" name="speed" value="0.01">
+    </label>
+    <br>
+    <label>
+        Во сколько раз реальные координаты экрана сожмуться перед входом в алгоритм <span style="color:red">(лучше не трогать)</span>
+        <input id="approximation" name="approximation" value="1000">
+    </label>
+    <br>
+    <label>
+        Как часто будет обновляться логгер
+        <input id="logger_window" name="logger_window" value="100">
+    </label>
+    <br>
+</div>
+
+<a href="../index.html">back to main page</a>
+
+<button onclick="window.location.reload()">reload</button>
+
+<div id="log" style="color: #636363; font-style: italic; margin-top: 20px">
+
+</div>
+
+<script src="src/learn.js"></script>
+
+</body>
+</html>
